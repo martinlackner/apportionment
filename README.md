@@ -18,7 +18,7 @@ The following methods are implemented:
 ## How-to
 
 The following example calculates the seat distribution of Austrian representatives in the 
-European Parliament based on the D'Hondt method and the [2019 election results](https://www.bmi.gv.at/412/Europawahlen/Europawahl_2019).
+European Parliament based on the D'Hondt method and the [2019 election results](https://www.bmi.gv.at/412/Europawahlen/Europawahl_2019). Parties that received less than 4% are excluded from obtaining seats and are thus excluded in the calculation.
 
 ```python
 import apportionment

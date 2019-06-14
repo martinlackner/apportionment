@@ -37,9 +37,8 @@ def __divzero_fewerseatsthanparties(distribution, seats, parties, verbose):
     return representatives
     
 def __print_results(representatives, parties):
-    print "  result:"
     for i in range(len(representatives)):
-        print "   "+str(parties[i])+": "+str(representatives[i])
+        print "  "+str(parties[i])+": "+str(representatives[i])
 
 def within_quota(distribution, seats, representatives, parties=string.ascii_uppercase):
     n = sum(distribution)

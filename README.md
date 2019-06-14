@@ -8,8 +8,7 @@ The following methods are implemented:
 * the largest remainder method (or Hamilton method)
 * the class of divisor methods including
    - D'Hondt (or Jefferson)
-   - Sainte Lague
-   - Webster
+   - Sainte-Laguë (Webster)
    - Huntington-Hill
    - Adams
 * the Quota method [1]

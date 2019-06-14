@@ -27,7 +27,7 @@ seats=18
 print apportionment.method("dhondt", distribution, seats, verbose=False)
 ```
 
-Another example can be found in apportioment/example.py.
+Another example can be found in [apportioment/example.py](example.py).
 
 ## References
 

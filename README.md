@@ -8,7 +8,7 @@ The following methods are implemented:
 * the largest remainder method (or Hamilton method)
 * the class of divisor methods including
    - D'Hondt (or Jefferson)
-   - Sainte-Laguë (Webster)
+   - Sainte-Laguë (or Webster)
    - Huntington-Hill
    - Adams
 * the Quota method [1]
@@ -26,7 +26,7 @@ seats=18
 print apportionment.method("dhondt", distribution, seats, verbose=False)
 ```
 
-Another example can be found in [apportionment/example.py](example.py).
+Another example can be found in [example.py](example.py).
 
 ## References
 

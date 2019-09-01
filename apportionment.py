@@ -1,3 +1,4 @@
+from __future__ import print_function, division
 import string
 import math
 try:
@@ -41,13 +42,13 @@ def __divzero_fewerseatsthanparties(distribution, seats, parties, verbose):
                 ties = True
             tiebreaking_message += parties[i] + ", "
     if ties and verbose:
-        print tiebreaking_message[:-2]
+        print(tiebreaking_message[:-2])
     return representatives
 
 
 def __print_results(representatives, parties):
     for i in range(len(representatives)):
-        print "  "+str(parties[i])+": "+str(representatives[i])
+        print("  "+str(parties[i])+": "+str(representatives[i]))
 
 
 def within_quota(distribution, seats, representatives,
@@ -55,12 +56,14 @@ def within_quota(distribution, seats, representatives,
     n = sum(distribution)
     within = True
     for i in range(len(distribution)):
-        if representatives[i] > math.ceil(float(distribution[i]) * seats / n):
+        upperquota = int(math.ceil(float(distribution[i]) * seats / n))
+        if representatives[i] > upperquota:
             print("upper quota of party", parties[i],
                   "violated: quota is", float(distribution[i]) * seats / n,
                   "but has", representatives[i], "representatives")
             within = False
-        if representatives[i] < math.floor(float(distribution[i]) * seats / n):
+        lowerquota = int(math.floor(float(distribution[i]) * seats / n))
+        if representatives[i] < lowerquota:
             print("lower quota of party", parties[i],
                   "violated: quota is", float(distribution[i]) * seats / n,
                   "but has only", representatives[i], "representatives")
@@ -72,7 +75,7 @@ def within_quota(distribution, seats, representatives,
 def largest_remainder(distribution, seats, parties=string.ascii_uppercase,
                       verbose=True):
     if verbose:
-        print "\nLargest remainder method with Hare quota (Hamilton)"
+        print("\nLargest remainder method with Hare quota (Hamilton)")
     q = Fraction(sum(distribution), seats)
     quotas = [Fraction(p, q) for p in distribution]
     representatives = [int(qu.numerator)//int(qu.denominator) for qu in quotas]
@@ -96,7 +99,7 @@ def largest_remainder(distribution, seats, parties=string.ascii_uppercase,
                 tiebreaking_message += parties[i] + ", "
                 representatives[i] += 1
         if ties and verbose:
-            print tiebreaking_message[:-2]
+            print(tiebreaking_message[:-2])
 
     if verbose:
         __print_results(representatives, parties)
@@ -112,15 +115,15 @@ def divisor(distribution, seats, method, parties=string.ascii_uppercase,
     representatives = [0] * len(distribution)
     if method in ["dhondt", "jefferson"]:
         if verbose:
-            print "\nD'Hondt (Jefferson) method"
+            print("\nD'Hondt (Jefferson) method")
         divisors = [i+1 for i in range(seats)]
     elif method in ["saintelague", "webster"]:
         if verbose:
-            print "\nSainte Lague (Webster) method"
+            print("\nSainte Lague (Webster) method")
         divisors = [2*i+1 for i in range(seats)]
     elif method in ["huntington", "hill"]:
         if verbose:
-            print "\nHuntington-Hill method"
+            print("\nHuntington-Hill method")
         if seats < len(distribution):
             representatives = __divzero_fewerseatsthanparties(distribution,
                                                               seats, parties,
@@ -130,7 +133,7 @@ def divisor(distribution, seats, method, parties=string.ascii_uppercase,
             divisors = [math.sqrt((i+1)*(i+2)) for i in range(seats)]
     elif method in ["adams"]:
         if verbose:
-            print "\nAdams method"
+            print("\nAdams method")
         if seats < len(distribution):
             representatives = __divzero_fewerseatsthanparties(distribution,
                                                               seats, parties,
@@ -139,14 +142,17 @@ def divisor(distribution, seats, method, parties=string.ascii_uppercase,
             representatives = [1] * len(distribution)
             divisors = [i+1 for i in range(seats)]
     else:
-        print method, "is not a defined divisor method"
+        print(method, "is not a defined divisor method")
         return
 
     # assigning representatives
     if seats > sum(representatives):
         weights = []
         for p in distribution:
-            weights.append([Fraction(p, div) for div in divisors])
+            if method in ["huntington", "hill"]:
+                weights.append([(p / div) for div in divisors])
+            else:
+                weights.append([Fraction(p, div) for div in divisors])
         flatweights = sorted([w for l in weights for w in l], reverse=True)
         minweight = flatweights[seats - sum(representatives) - 1]
 
@@ -170,7 +176,7 @@ def divisor(distribution, seats, method, parties=string.ascii_uppercase,
                 tiebreaking_message += parties[i] + ", "
                 representatives[i] += 1
         if ties and verbose:
-            print tiebreaking_message[:-2]
+            print(tiebreaking_message[:-2])
 
     if verbose:
         __print_results(representatives, parties)
@@ -184,7 +190,7 @@ def divisor(distribution, seats, method, parties=string.ascii_uppercase,
 #        The American Mathematical Monthly, 82(7), 701-730.)
 def quota(distribution, seats, parties=string.ascii_uppercase, verbose=True):
     if verbose:
-        print "\nQuota method"
+        print("\nQuota method")
     representatives = [0] * len(distribution)
     tied = []
     for k in range(1, seats+1):
@@ -192,8 +198,9 @@ def quota(distribution, seats, parties=string.ascii_uppercase, verbose=True):
                   for i in range(len(distribution))]
         # check if upper quota is violated
         for i in range(len(distribution)):
-            if representatives[i] >= (math.ceil(float(distribution[i]) *
-                                                k / sum(distribution))):
+            upperquota = int(math.ceil(float(distribution[i]) *
+                                       k / sum(distribution)))
+            if representatives[i] >= upperquota:
                 quotas[i] = 0
         chosen = [i for i in range(len(distribution))
                   if quotas[i] == max(quotas)]
@@ -215,7 +222,7 @@ def quota(distribution, seats, parties=string.ascii_uppercase, verbose=True):
                                "\n  to the disadvantage of: ")
         for i in range(1, len(chosen)):
             tiebreaking_message += tied[i] + ", "
-        print tiebreaking_message
+        print(tiebreaking_message)
 
     if verbose:
         __print_results(representatives, parties)

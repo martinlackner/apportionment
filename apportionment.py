@@ -163,7 +163,7 @@ def quota(distribution, seats, parties=string.ascii_uppercase, verbose=True):
         quotas = [mpq(distribution[i],representatives[i]+1) for i in range(len(distribution))]
         # check if upper quota is violated
         for i in range(len(distribution)):
-            if representatives[i] > math.ceil(float(distribution[i])*k/sum(distribution)):  
+            if representatives[i] >= math.ceil(float(distribution[i])*k/sum(distribution)):  
                 quotas[i] = 0
         chosen = [i for i in range(len(distribution)) if quotas[i] == max(quotas)]
         if verbose:

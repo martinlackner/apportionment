@@ -105,6 +105,9 @@ class TestApprovalMultiwinner(unittest.TestCase):
         representatives = [52, 45, 1, 1, 1]
         self.assertFalse(apportionment.within_quota(votes, representatives,
                                                     verbose=False))
+        representatives = [52, 43, 2, 1, 2]
+        self.assertFalse(apportionment.within_quota(votes, representatives,
+                                                    verbose=False))
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ except ImportError:
     from fractions import Fraction
 
 
-def method(method, votes, seats, parties=string.ascii_uppercase,
+def method(method, votes, seats, parties=string.letters,
            verbose=True):
     if method == "quota":
         return quota(votes, seats, parties, verbose)
@@ -23,58 +23,37 @@ def method(method, votes, seats, parties=string.ascii_uppercase,
                                   " not known")
 
 
-# required for methods with 0 divisors (Adams, Huntington-Hill)
-def __divzero_fewerseatsthanparties(votes, seats, parties, verbose):
-    representatives = [0] * len(votes)
-    if verbose:
-        print("  fewer seats than parties; " + str(seats) +
-              " strongest parties receive one seat")
-    tiebreaking_message = "  ties broken in favor of: "
-    ties = False
-    mincount = sorted(votes, reverse=True)[seats-1]
-    for i in range(len(votes)):
-        if sum(representatives) < seats and votes[i] >= mincount:
-            if votes[i] == mincount:
-                tiebreaking_message += parties[i] + ", "
-            representatives[i] = 1
-        elif sum(representatives) == seats and votes[i] >= mincount:
-            if not ties:
-                tiebreaking_message = tiebreaking_message[:-2]
-                tiebreaking_message += "\n  to the disadvantage of: "
-                ties = True
-            tiebreaking_message += parties[i] + ", "
-    if ties and verbose:
-        print(tiebreaking_message[:-2])
-    return representatives
-
-
 def __print_results(representatives, parties):
     for i in range(len(representatives)):
         print("  "+str(parties[i])+": "+str(representatives[i]))
 
 
-def within_quota(votes, seats, representatives,
-                 parties=string.ascii_uppercase):
+# verifies whether a given assignment of representatives
+# is within quota
+def within_quota(votes, representatives, parties=string.letters, verbose=True):
     n = sum(votes)
+    seats = sum(representatives)
     within = True
     for i in range(len(votes)):
         upperquota = int(math.ceil(float(votes[i]) * seats / n))
         if representatives[i] > upperquota:
-            print("upper quota of party", parties[i],
-                  "violated: quota is", float(votes[i]) * seats / n,
-                  "but has", representatives[i], "representatives")
+            if verbose:
+                print("upper quota of party", parties[i],
+                      "violated: quota is", float(votes[i]) * seats / n,
+                      "but has", representatives[i], "representatives")
             within = False
         lowerquota = int(math.floor(float(votes[i]) * seats / n))
         if representatives[i] < lowerquota:
-            print("lower quota of party", parties[i],
-                  "violated: quota is", float(votes[i]) * seats / n,
-                  "but has only", representatives[i], "representatives")
+            if verbose:
+                print("lower quota of party", parties[i],
+                      "violated: quota is", float(votes[i]) * seats / n,
+                      "but has only", representatives[i], "representatives")
             within = False
     return within
 
 
 # Largest remainder method (Hamilton method)
-def largest_remainder(votes, seats, parties=string.ascii_uppercase,
+def largest_remainder(votes, seats, parties=string.letters,
                       verbose=True):
     if verbose:
         print("\nLargest remainder method with Hare quota (Hamilton)")
@@ -110,10 +89,8 @@ def largest_remainder(votes, seats, parties=string.ascii_uppercase,
 
 
 # Divisor methods
-def divisor(votes, seats, method, parties=string.ascii_uppercase,
+def divisor(votes, seats, method, parties=string.letters,
             verbose=True):
-    if len(votes) > len(parties):
-        parties = list(range(len(votes)))
     representatives = [0] * len(votes)
     if method in ["dhondt", "jefferson", "greatestdivisors"]:
         if verbose:
@@ -197,11 +174,36 @@ def divisor(votes, seats, method, parties=string.ascii_uppercase,
     return representatives
 
 
+# required for methods with 0 divisors (Adams, Huntington-Hill)
+def __divzero_fewerseatsthanparties(votes, seats, parties, verbose):
+    representatives = [0] * len(votes)
+    if verbose:
+        print("  fewer seats than parties; " + str(seats) +
+              " strongest parties receive one seat")
+    tiebreaking_message = "  ties broken in favor of: "
+    ties = False
+    mincount = sorted(votes, reverse=True)[seats-1]
+    for i in range(len(votes)):
+        if sum(representatives) < seats and votes[i] >= mincount:
+            if votes[i] == mincount:
+                tiebreaking_message += parties[i] + ", "
+            representatives[i] = 1
+        elif sum(representatives) == seats and votes[i] >= mincount:
+            if not ties:
+                tiebreaking_message = tiebreaking_message[:-2]
+                tiebreaking_message += "\n  to the disadvantage of: "
+                ties = True
+            tiebreaking_message += parties[i] + ", "
+    if ties and verbose:
+        print(tiebreaking_message[:-2])
+    return representatives
+
+
 # The quota method
 #  ( see Balinski, M. L., & Young, H. P. (1975).
 #        The quota method of apportionment.
 #        The American Mathematical Monthly, 82(7), 701-730.)
-def quota(votes, seats, parties=string.ascii_uppercase, verbose=True):
+def quota(votes, seats, parties=string.letters, verbose=True):
     if verbose:
         print("\nQuota method")
     representatives = [0] * len(votes)

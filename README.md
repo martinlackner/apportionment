@@ -29,6 +29,19 @@ seats = 18
 apportionment.method("dhondt", votes, seats, parties, verbose=True)
 ```
 
+The output is
+
+```
+D'Hondt (Jefferson) method
+  OEVP: 7
+  SPOE: 5
+  FPOE: 3
+  GRUENE: 2
+  NEOS: 1
+```
+
+which is indeed the [official result](https://www.bmi.gv.at/412/Europawahlen/Europawahl_2019).
+
 Another example can be found in [example.py](example.py).
 
 ## References

@@ -8,7 +8,7 @@ import apportionment
 
 
 METHODS = ["quota", "largest_remainder", "dhondt",
-           "saintelague", "huntington", "adams"]
+           "saintelague", "huntington", "adams", "dean"]
 
 
 class TestApprovalMultiwinner(unittest.TestCase):
@@ -62,7 +62,7 @@ class TestApprovalMultiwinner(unittest.TestCase):
             self.assertEqual(result, [1, 0, 0, 0, 1, 1],
                              msg=method + " failed")
 
-    # example taken from 
+    # example taken from
     # Balinski, M. L., & Young, H. P. (1975).
     # The quota method of apportionment.
     # The American Mathematical Monthly, 82(7), 701-730.
@@ -85,6 +85,26 @@ class TestApprovalMultiwinner(unittest.TestCase):
                                           seats, verbose=False)
             self.assertEqual(result, RESULTS[method],
                              msg=method + " failed")
+
+    def test_tiebreaking(self):
+        self.longMessage = True
+
+        votes = [2, 1, 1, 2, 2]
+        seats = 2
+        for method in METHODS:
+            result = apportionment.method(method, votes,
+                                          seats, verbose=False)
+            self.assertEqual(result, [1, 0, 0, 1, 0],
+                             msg=method + " failed")
+
+    def test_within_quota(self):
+        votes = [5117, 4400, 162, 161, 160]
+        representatives = [51, 44, 2, 2, 1]
+        self.assertTrue(apportionment.within_quota(votes, representatives,
+                                                   verbose=False))
+        representatives = [52, 45, 1, 1, 1]
+        self.assertFalse(apportionment.within_quota(votes, representatives,
+                                                    verbose=False))
 
 
 if __name__ == '__main__':

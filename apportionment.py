@@ -129,7 +129,7 @@ def divisor(distribution, seats, method, parties=string.ascii_uppercase,
                                                               seats, parties,
                                                               verbose)
         else:
-            representatives = [1] * len(distribution)
+            representatives = [1 if p > 0 else 0 for p in distribution]
             divisors = [math.sqrt((i+1)*(i+2)) for i in range(seats)]
     elif method in ["adams"]:
         if verbose:
@@ -139,7 +139,7 @@ def divisor(distribution, seats, method, parties=string.ascii_uppercase,
                                                               seats, parties,
                                                               verbose)
         else:
-            representatives = [1] * len(distribution)
+            representatives = [1 if p > 0 else 0 for p in distribution]
             divisors = [i+1 for i in range(seats)]
     else:
         print(method, "is not a defined divisor method")
@@ -159,12 +159,12 @@ def divisor(distribution, seats, method, parties=string.ascii_uppercase,
         for i in range(len(distribution)):
             representatives[i] += len([w for w in weights[i] if w > minweight])
 
+    ties = False
     # dealing with ties
     if seats > sum(representatives):
         tiebreaking_message = ("  tiebreaking in order of: " +
                                str(parties[:len(distribution)]) +
                                "\n  ties broken in favor of: ")
-        ties = False
         for i in range(len(distribution)):
             if sum(representatives) == seats and minweight in weights[i]:
                 if not ties:
@@ -181,7 +181,7 @@ def divisor(distribution, seats, method, parties=string.ascii_uppercase,
     if verbose:
         __print_results(representatives, parties)
 
-    return representatives
+    return representatives, ties
 
 
 # The quota method

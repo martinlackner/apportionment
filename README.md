@@ -23,10 +23,10 @@ European Parliament based on the D'Hondt method and the [2019 election results](
 
 ```python
 import apportionment
-parties = ['ÖVP', 'SPÖ', 'FPÖ', 'GRÜNE', 'NEOS']
-distribution = [1305956, 903151, 650114, 532193, 319024]
+parties = ['OEVP', 'SPOE', 'FPOE', 'GRUENE', 'NEOS']
+votes = [1305956, 903151, 650114, 532193, 319024]
 seats = 18
-apportionment.method("dhondt", distribution, seats, parties, verbose=True)
+apportionment.method("dhondt", votes, seats, parties, verbose=True)
 ```
 
 Another example can be found in [example.py](example.py).

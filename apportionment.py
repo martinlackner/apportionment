@@ -14,7 +14,9 @@ def method(method, votes, seats, parties=string.ascii_uppercase,
     elif method in ["lrm", "hamilton", "largest_remainder"]:
         return largest_remainder(votes, seats, parties, verbose)
     elif method in ["dhondt", "jefferson", "saintelague", "webster",
-                    "huntington", "hill", "adams"]:
+                    "huntington", "hill", "adams", "dean",
+                    "smallestdivisor", "harmonicmean", "equalproportions",
+                    "majorfractions", "greatestdivisors"]:
         return divisor(votes, seats, method, parties, verbose)
     else:
         raise NotImplementedError("apportionment method " + method +
@@ -113,15 +115,15 @@ def divisor(votes, seats, method, parties=string.ascii_uppercase,
     if len(votes) > len(parties):
         parties = list(range(len(votes)))
     representatives = [0] * len(votes)
-    if method in ["dhondt", "jefferson"]:
+    if method in ["dhondt", "jefferson", "greatestdivisors"]:
         if verbose:
             print("\nD'Hondt (Jefferson) method")
         divisors = [i+1 for i in range(seats)]
-    elif method in ["saintelague", "webster"]:
+    elif method in ["saintelague", "webster", "majorfractions"]:
         if verbose:
             print("\nSainte Lague (Webster) method")
         divisors = [2*i+1 for i in range(seats)]
-    elif method in ["huntington", "hill"]:
+    elif method in ["huntington", "hill", "equalproportions"]:
         if verbose:
             print("\nHuntington-Hill method")
         if seats < len(votes):
@@ -131,7 +133,7 @@ def divisor(votes, seats, method, parties=string.ascii_uppercase,
         else:
             representatives = [1 if p > 0 else 0 for p in votes]
             divisors = [math.sqrt((i+1)*(i+2)) for i in range(seats)]
-    elif method in ["adams"]:
+    elif method in ["adams", "smallestdivisor"]:
         if verbose:
             print("\nAdams method")
         if seats < len(votes):
@@ -141,6 +143,17 @@ def divisor(votes, seats, method, parties=string.ascii_uppercase,
         else:
             representatives = [1 if p > 0 else 0 for p in votes]
             divisors = [i+1 for i in range(seats)]
+    elif method in ["dean", "harmonicmean"]:
+        if verbose:
+            print("\Dean method")
+        if seats < len(votes):
+            representatives = __divzero_fewerseatsthanparties(votes,
+                                                              seats, parties,
+                                                              verbose)
+        else:
+            representatives = [1 if p > 0 else 0 for p in votes]
+            divisors = [Fraction(2 * (i+1) * (i+2), 2 * (i+1) + 1)
+                        for i in range(seats)]
     else:
         print(method, "is not a defined divisor method")
         return

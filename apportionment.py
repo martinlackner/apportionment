@@ -1,10 +1,7 @@
 from __future__ import print_function, division
 import string
 import math
-try:
-    from gmpy2 import mpq as Fraction
-except ImportError:
-    from fractions import Fraction
+from fractions import Fraction
 
 
 def method(method, votes, seats, parties=string.letters,
@@ -132,8 +129,7 @@ def divisor(votes, seats, method, parties=string.letters,
             divisors = [Fraction(2 * (i+1) * (i+2), 2 * (i+1) + 1)
                         for i in range(seats)]
     else:
-        print(method, "is not a defined divisor method")
-        return
+        raise NotImplementedError("divisor method " + method + " not known")
 
     # assigning representatives
     if seats > sum(representatives):

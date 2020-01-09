@@ -4,20 +4,37 @@ import math
 from fractions import Fraction
 
 
-def method(method, votes, seats, parties=string.letters,
+def method(method, votes, seats, parties=string.letters, threshold=None,
            verbose=True):
+    filtered_votes = apply_threshold(votes, threshold)
     if method == "quota":
-        return quota(votes, seats, parties, verbose)
+        return quota(filtered_votes, seats, parties, verbose)
     elif method in ["lrm", "hamilton", "largest_remainder"]:
-        return largest_remainder(votes, seats, parties, verbose)
+        return largest_remainder(filtered_votes, seats, parties, verbose)
     elif method in ["dhondt", "jefferson", "saintelague", "webster",
                     "huntington", "hill", "adams", "dean",
                     "smallestdivisor", "harmonicmean", "equalproportions",
                     "majorfractions", "greatestdivisors"]:
-        return divisor(votes, seats, method, parties, verbose)
+        return divisor(filtered_votes, seats, method, parties, verbose)
     else:
         raise NotImplementedError("apportionment method " + method +
                                   " not known")
+
+
+def apply_threshold(votes, threshold):
+    """Sets vote counts to 0 if threshold is not met."""
+    if threshold is not None:
+        v = []
+        combined_votes = sum(votes)
+        min_votes = combined_votes * threshold
+        for vote in votes:
+            if vote < min_votes:
+                v.append(0)
+            else:
+                v.append(vote)
+        return v
+    else:
+        return votes
 
 
 def __print_results(representatives, parties):

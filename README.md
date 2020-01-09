@@ -43,7 +43,7 @@ D'Hondt (Jefferson) method
 which is indeed the [official result](https://www.bmi.gv.at/412/Europawahlen/Europawahl_2019).
 
 Another example can be found in [examples/example.py](examples/example.py).
-An example with the Austrian National Council elections can be found in [examples/austria_examples.py](examples/austria_examples.py)
+An example with the Austrian National Council elections can be found in [examples/austria_example.py](examples/austria_example.py)
 
 ## References
 

@@ -4,8 +4,8 @@ import math
 from fractions import Fraction
 
 
-def method(method, votes, seats, parties=string.letters, threshold=None,
-           verbose=True):
+def method(method, votes, seats, parties=string.ascii_letters,
+           threshold=None, verbose=True):
     filtered_votes = apply_threshold(votes, threshold)
     if method == "quota":
         return quota(filtered_votes, seats, parties, verbose)
@@ -44,7 +44,8 @@ def __print_results(representatives, parties):
 
 # verifies whether a given assignment of representatives
 # is within quota
-def within_quota(votes, representatives, parties=string.letters, verbose=True):
+def within_quota(votes, representatives, parties=string.ascii_letters,
+                 verbose=True):
     n = sum(votes)
     seats = sum(representatives)
     within = True
@@ -67,7 +68,7 @@ def within_quota(votes, representatives, parties=string.letters, verbose=True):
 
 
 # Largest remainder method (Hamilton method)
-def largest_remainder(votes, seats, parties=string.letters,
+def largest_remainder(votes, seats, parties=string.ascii_letters,
                       verbose=True):
     if verbose:
         print("\nLargest remainder method with Hare quota (Hamilton)")
@@ -103,7 +104,7 @@ def largest_remainder(votes, seats, parties=string.letters,
 
 
 # Divisor methods
-def divisor(votes, seats, method, parties=string.letters,
+def divisor(votes, seats, method, parties=string.ascii_letters,
             verbose=True):
     representatives = [0] * len(votes)
     if method in ["dhondt", "jefferson", "greatestdivisors"]:
@@ -216,7 +217,7 @@ def __divzero_fewerseatsthanparties(votes, seats, parties, verbose):
 #  ( see Balinski, M. L., & Young, H. P. (1975).
 #        The quota method of apportionment.
 #        The American Mathematical Monthly, 82(7), 701-730.)
-def quota(votes, seats, parties=string.letters, verbose=True):
+def quota(votes, seats, parties=string.ascii_letters, verbose=True):
     if verbose:
         print("\nQuota method")
     representatives = [0] * len(votes)

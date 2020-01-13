@@ -109,6 +109,30 @@ class TestApprovalMultiwinner(unittest.TestCase):
         self.assertFalse(apportionment.within_quota(votes, representatives,
                                                     verbose=False))
 
+    def test_threshold(self):
+        votes = [41, 56, 3]
+        seats = 60
+        threshold = 0.03
+        filtered_votes = apportionment.apply_threshold(votes, threshold)
+        self.assertEqual(filtered_votes, [41, 56, 3],
+                         "Threshold cut too much.")
+        threshold = 0.031
+        filtered_votes = apportionment.apply_threshold(votes, threshold)
+        self.assertEqual(filtered_votes, [41, 56, 0],
+                         "Threshold was not applied correctly.")
+
+        method = "dhondt"
+        threshold = 0
+        unfiltered_result = apportionment.method(method, votes, seats,
+                                                 threshold=threshold,
+                                                 verbose=False)
+        threshold = 0.04
+        filtered_result = apportionment.method(method, votes, seats,
+                                               threshold=threshold,
+                                               verbose=False)
+        self.assertNotEqual(unfiltered_result, filtered_result,
+                            "Result did not change despite threshold")
+
 
 if __name__ == '__main__':
     unittest.main()

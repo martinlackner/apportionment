@@ -7,8 +7,8 @@ import unittest
 import apportionment
 
 
-METHODS = ["quota", "largest_remainder", "dhondt",
-           "saintelague", "huntington", "adams", "dean"]
+METHODS = ["quota", "largest_remainder", "dhondt", "saintelague",
+           "modified_saintelague", "huntington", "adams", "dean"]
 
 
 class TestApprovalMultiwinner(unittest.TestCase):
@@ -19,7 +19,7 @@ class TestApprovalMultiwinner(unittest.TestCase):
                              "huntington", "hill", "adams", "dean",
                              "smallestdivisor", "harmonicmean",
                              "equalproportions", "majorfractions",
-                             "greatestdivisors"]
+                             "greatestdivisors", "modified_saintelague"]
 
         votes = [1]
         seats = 1

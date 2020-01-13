@@ -73,6 +73,7 @@ class TestApprovalMultiwinner(unittest.TestCase):
                    "largest_remainder": [51, 44, 2, 2, 1],
                    "dhondt": [52, 45, 1, 1, 1],
                    "saintelague": [51, 43, 2, 2, 2],
+                   "modified_saintelague":  [51, 43, 2, 2, 2],
                    "huntington": [51, 43, 2, 2, 2],
                    "adams": [51, 43, 2, 2, 2],
                    "dean": [51, 43, 2, 2, 2]
@@ -133,6 +134,15 @@ class TestApprovalMultiwinner(unittest.TestCase):
         self.assertNotEqual(unfiltered_result, filtered_result,
                             "Result did not change despite threshold")
 
-
+    def test_saintelague_difference(self):
+        votes = [6, 1]
+        seats = 4
+        r1 = apportionment.method("saintelague", votes,
+                                  seats, verbose=False)  # [4, 0]
+        r2 =  apportionment.method("modified_saintelague", votes,
+                                   seats, verbose=False)  # [3, 1]
+        self.assertNotEqual(r1, r2,
+                            "Saintelague should produce different "+
+                            "result than modified variant.")
 if __name__ == '__main__':
     unittest.main()

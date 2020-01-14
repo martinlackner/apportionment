@@ -144,5 +144,7 @@ class TestApprovalMultiwinner(unittest.TestCase):
         self.assertNotEqual(r1, r2,
                             "Saintelague should produce different "+
                             "result than modified variant.")
+
+
 if __name__ == '__main__':
     unittest.main()

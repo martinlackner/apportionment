@@ -10,6 +10,7 @@ The following apportionment methods are implemented:
 * the class of divisor methods including
    - D'Hondt (or Jefferson)
    - Sainte-Laguë (or Webster)
+   - Modified Sainte-Laguë (as used e.g. in Norway) 
    - Huntington-Hill
    - Adams
 * the quota method [1]
@@ -43,7 +44,7 @@ D'Hondt (Jefferson) method
 which is indeed the [official result](https://www.bmi.gv.at/412/Europawahlen/Europawahl_2019).
 
 Another example can be found in [examples/example.py](examples/example.py).
-An example with the Austrian National Council elections can be found in [examples/austria_examples.py](examples/austria_examples.py)
+Examples from the Austrian National Council elections can be found in [examples/austria_examples.py](examples/austria_examples.py); and examples from the Israeli Knesset in [examples/israel_examples.py](examples/israel_examples.py).
 
 ## References
 

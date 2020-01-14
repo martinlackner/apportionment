@@ -3,6 +3,9 @@ import sys
 sys.path.insert(0, '..')
 import apportionment
 
+print("Parties with surplus-vote agreements are treated as coalitions")
+print("See https://www.knesset.gov.il/lexicon/eng/seats_eng.htm\n")
+
 with open("./knesset.txt", "r") as f:
 
     for line in f:
@@ -12,7 +15,7 @@ with open("./knesset.txt", "r") as f:
         result = apportionment.method("dhondt", votes,
                                       sum(officialresult),
                                       parties=partynames,
-                                      threshold=None,  # is already excluded from input
+                                      threshold=threshold,
                                       verbose=True)
         # actual results
         print("Identical with official result: "

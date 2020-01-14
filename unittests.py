@@ -7,8 +7,8 @@ import unittest
 import apportionment
 
 
-METHODS = ["quota", "largest_remainder", "dhondt",
-           "saintelague", "huntington", "adams", "dean"]
+METHODS = ["quota", "largest_remainder", "dhondt", "saintelague",
+           "modified_saintelague", "huntington", "adams", "dean"]
 
 
 class TestApprovalMultiwinner(unittest.TestCase):
@@ -19,7 +19,7 @@ class TestApprovalMultiwinner(unittest.TestCase):
                              "huntington", "hill", "adams", "dean",
                              "smallestdivisor", "harmonicmean",
                              "equalproportions", "majorfractions",
-                             "greatestdivisors"]
+                             "greatestdivisors", "modified_saintelague"]
 
         votes = [1]
         seats = 1
@@ -73,6 +73,7 @@ class TestApprovalMultiwinner(unittest.TestCase):
                    "largest_remainder": [51, 44, 2, 2, 1],
                    "dhondt": [52, 45, 1, 1, 1],
                    "saintelague": [51, 43, 2, 2, 2],
+                   "modified_saintelague":  [51, 43, 2, 2, 2],
                    "huntington": [51, 43, 2, 2, 2],
                    "adams": [51, 43, 2, 2, 2],
                    "dean": [51, 43, 2, 2, 2]
@@ -108,6 +109,41 @@ class TestApprovalMultiwinner(unittest.TestCase):
         representatives = [52, 43, 2, 1, 2]
         self.assertFalse(apportionment.within_quota(votes, representatives,
                                                     verbose=False))
+
+    def test_threshold(self):
+        votes = [41, 56, 3]
+        seats = 60
+        threshold = 0.03
+        filtered_votes = apportionment.apply_threshold(votes, threshold)
+        self.assertEqual(filtered_votes, [41, 56, 3],
+                         "Threshold cut too much.")
+        threshold = 0.031
+        filtered_votes = apportionment.apply_threshold(votes, threshold)
+        self.assertEqual(filtered_votes, [41, 56, 0],
+                         "Threshold was not applied correctly.")
+
+        method = "dhondt"
+        threshold = 0
+        unfiltered_result = apportionment.method(method, votes, seats,
+                                                 threshold=threshold,
+                                                 verbose=False)
+        threshold = 0.04
+        filtered_result = apportionment.method(method, votes, seats,
+                                               threshold=threshold,
+                                               verbose=False)
+        self.assertNotEqual(unfiltered_result, filtered_result,
+                            "Result did not change despite threshold")
+
+    def test_saintelague_difference(self):
+        votes = [6, 1]
+        seats = 4
+        r1 = apportionment.method("saintelague", votes,
+                                  seats, verbose=False)  # [4, 0]
+        r2 =  apportionment.method("modified_saintelague", votes,
+                                   seats, verbose=False)  # [3, 1]
+        self.assertNotEqual(r1, r2,
+                            "Saintelague should produce different "+
+                            "result than modified variant.")
 
 
 if __name__ == '__main__':

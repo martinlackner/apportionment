@@ -12,6 +12,7 @@ def method(method, votes, seats, parties=string.ascii_letters,
     elif method in ["lrm", "hamilton", "largest_remainder"]:
         return largest_remainder(filtered_votes, seats, parties, verbose)
     elif method in ["dhondt", "jefferson", "saintelague", "webster",
+                    "modified_saintelague",
                     "huntington", "hill", "adams", "dean",
                     "smallestdivisor", "harmonicmean", "equalproportions",
                     "majorfractions", "greatestdivisors"]:
@@ -115,6 +116,10 @@ def divisor(votes, seats, method, parties=string.ascii_letters,
         if verbose:
             print("\nSainte Lague (Webster) method")
         divisors = [2*i+1 for i in range(seats)]
+    elif method in ["modified_saintelague"]:
+        if verbose:
+            print("\nModified Sainte Lague (Webster) method")
+        divisors = [1.4] + [2*i+1 for i in range(1,seats)]
     elif method in ["huntington", "hill", "equalproportions"]:
         if verbose:
             print("\nHuntington-Hill method")
@@ -137,7 +142,7 @@ def divisor(votes, seats, method, parties=string.ascii_letters,
             divisors = [i+1 for i in range(seats)]
     elif method in ["dean", "harmonicmean"]:
         if verbose:
-            print("\Dean method")
+            print("\nDean method")
         if seats < len(votes):
             representatives = __divzero_fewerseatsthanparties(votes,
                                                               seats, parties,
@@ -153,7 +158,7 @@ def divisor(votes, seats, method, parties=string.ascii_letters,
     if seats > sum(representatives):
         weights = []
         for p in votes:
-            if method in ["huntington", "hill"]:
+            if method in ["huntington", "hill", "modified_saintelague"]:
                 weights.append([(p / div) for div in divisors])
             else:
                 weights.append([Fraction(p, div) for div in divisors])

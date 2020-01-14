@@ -138,12 +138,12 @@ class TestApprovalMultiwinner(unittest.TestCase):
         votes = [6, 1]
         seats = 4
         r1 = apportionment.method("saintelague", votes,
+                                  seats, verbose=False)  # [3, 1]
+        r2 = apportionment.method("modified_saintelague", votes,
                                   seats, verbose=False)  # [4, 0]
-        r2 =  apportionment.method("modified_saintelague", votes,
-                                   seats, verbose=False)  # [3, 1]
         self.assertNotEqual(r1, r2,
-                            "Saintelague should produce different "+
-                            "result than modified variant.")
+                            "Saintelague and its modified variant"
+                            + "should produce differents results.")
 
 
 if __name__ == '__main__':

@@ -119,7 +119,7 @@ def divisor(votes, seats, method, parties=string.ascii_letters,
     elif method in ["modified_saintelague"]:
         if verbose:
             print("\nModified Sainte Lague (Webster) method")
-        divisors = [1.4] + [2*i+1 for i in range(1,seats)]
+        divisors = [1.4] + [2*i+1 for i in range(1, seats)]
     elif method in ["huntington", "hill", "equalproportions"]:
         if verbose:
             print("\nHuntington-Hill method")

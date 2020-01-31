@@ -5,7 +5,7 @@ import apportionment.methods as app
 print("Parties with surplus-vote agreements are treated as coalitions")
 print("See https://www.knesset.gov.il/lexicon/eng/seats_eng.htm\n")
 
-with open("./knesset.txt", "r") as f:
+with open("knesset.txt", "r") as f:
 
     for line in f:
         knesset_nr, partynames, votes, officialresult, threshold = \

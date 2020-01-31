@@ -1,7 +1,5 @@
 # Unit tests
 
-# Author: Martin Lackner
-
 
 import unittest
 import apportionment.methods as app

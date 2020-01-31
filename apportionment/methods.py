@@ -4,8 +4,8 @@ import math
 from fractions import Fraction
 
 
-def method(method, votes, seats, parties=string.ascii_letters,
-           threshold=None, verbose=True):
+def compute(method, votes, seats, parties=string.ascii_letters,
+            threshold=None, verbose=True):
     filtered_votes = apply_threshold(votes, threshold)
     if method == "quota":
         return quota(filtered_votes, seats, parties, verbose)

@@ -15,7 +15,7 @@ The following apportionment methods are implemented:
    - Adams
 * the quota method [1]
 
-This module supports Python >= 2.7 and uses [gmpy2](https://gmpy2.readthedocs.io/) if available.
+This module supports Python 2.7+ and 3.5+.
 
 ## How-to
 
@@ -43,8 +43,8 @@ D'Hondt (Jefferson) method
 
 which is indeed the [official result](https://www.bmi.gv.at/412/Europawahlen/Europawahl_2019).
 
-Another example can be found in [examples/example.py](examples/example.py).
-Examples from the Austrian National Council elections can be found in [examples/austria_examples.py](examples/austria_examples.py); and examples from the Israeli Knesset in [examples/israel_examples.py](examples/israel_examples.py).
+Another example can be found in [apportionment/examples/simple.py](apportionment/examples/simple.py).
+We verify results from recent Austrian National Council elections in [apportionment/examples/austria.py](apportionment/examples/austria.py) and from recent elections of the Israeli Knesset in [apportionment/examples/israel.py](apportionment/examples/israel.py).
 
 ## References
 

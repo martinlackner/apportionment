@@ -23,11 +23,11 @@ The following example calculates the seat distribution of Austrian representativ
 European Parliament based on the D'Hondt method and the [2019 election results](https://www.bmi.gv.at/412/Europawahlen/Europawahl_2019). Parties that received less than 4% are excluded from obtaining seats and are thus excluded in the calculation.
 
 ```python
-import apportionment
+import apportionment.methods as app
 parties = ['OEVP', 'SPOE', 'FPOE', 'GRUENE', 'NEOS']
 votes = [1305956, 903151, 650114, 532193, 319024]
 seats = 18
-apportionment.method("dhondt", votes, seats, parties, verbose=True)
+app.compute("dhondt", votes, seats, parties, verbose=True)
 ```
 
 The output is

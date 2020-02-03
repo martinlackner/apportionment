@@ -5,10 +5,6 @@ import unittest
 import apportionment.methods as app
 
 
-METHODS = ["quota", "largest_remainder", "dhondt", "saintelague",
-           "modified_saintelague", "huntington", "adams", "dean"]
-
-
 class TestApprovalMultiwinner(unittest.TestCase):
 
     def test_all_implemented(self):
@@ -32,7 +28,7 @@ class TestApprovalMultiwinner(unittest.TestCase):
 
         votes = [14, 28, 7, 35]
         seats = 12
-        for method in METHODS:
+        for method in app.METHODS:
             result = app.compute(method, votes,
                                  seats, verbose=False)
             self.assertEqual(result, [2, 4, 1, 5],
@@ -43,7 +39,7 @@ class TestApprovalMultiwinner(unittest.TestCase):
 
         votes = [0, 14, 28, 0, 0]
         seats = 6
-        for method in METHODS:
+        for method in app.METHODS:
             result = app.compute(method, votes,
                                  seats, verbose=False)
             self.assertEqual(result, [0, 2, 4, 0, 0],
@@ -54,13 +50,13 @@ class TestApprovalMultiwinner(unittest.TestCase):
 
         votes = [10, 9, 8, 8, 11, 12]
         seats = 3
-        for method in METHODS:
+        for method in app.METHODS:
             result = app.compute(method, votes,
                                  seats, verbose=False)
             self.assertEqual(result, [1, 0, 0, 0, 1, 1],
                              msg=method + " failed")
 
-    # example taken from
+    # examples taken from
     # Balinski, M. L., & Young, H. P. (1975).
     # The quota method of apportionment.
     # The American Mathematical Monthly, 82(7), 701-730.
@@ -111,7 +107,7 @@ class TestApprovalMultiwinner(unittest.TestCase):
 
         votes = [2, 1, 1, 2, 2]
         seats = 2
-        for method in METHODS:
+        for method in app.METHODS:
             result = app.compute(method, votes,
                                  seats, verbose=False)
             self.assertEqual(result, [1, 0, 0, 1, 0],
@@ -161,8 +157,28 @@ class TestApprovalMultiwinner(unittest.TestCase):
         r2 = app.compute("modified_saintelague", votes,
                          seats, verbose=False)  # [4, 0]
         self.assertNotEqual(r1, r2,
-                            "Saintelague and its modified variant"
-                            + "should produce differents results.")
+                            "Sainte Lague and its modified variant"
+                            + "should produce different results.")
+
+    def test_no_ties_allowed(self):
+        self.longMessage = True
+        votes = [11, 11, 11]
+        seats = 4
+        for method in app.METHODS:
+            with self.assertRaises(app.TiesException,
+                                   msg=method + " failed"):
+                app.compute(method, votes, seats,
+                            tiesallowed=False, verbose=False)
+
+    def test_no_ties_allowed2(self):
+        self.longMessage = True
+        votes = [12, 12, 11, 12]
+        seats = 3
+        for method in app.METHODS:
+            self.assertEqual(
+                app.compute(method, votes, seats,
+                            tiesallowed=False, verbose=False),
+                [1, 1, 0, 1], msg=method + " failed")
 
 
 if __name__ == '__main__':

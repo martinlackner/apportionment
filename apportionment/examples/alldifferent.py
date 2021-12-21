@@ -13,7 +13,7 @@ seats = 20
 methods = ["quota", "largest_remainder", "dhondt", "saintelague", "adams"]
 
 
-iterator = combinations(range(1, maxvoters+1), parties)
+iterator = combinations(range(1, maxvoters + 1), parties)
 
 for iterations, votes in enumerate(iterator):
     apportionments = set()
@@ -21,8 +21,10 @@ for iterations, votes in enumerate(iterator):
     for method in methods:
         try:  # in case of ties an exception occurs because tiesallowed=False
             apportionments.add(
-                tuple(app.compute(method, votes, seats,
-                                  tiesallowed=False, verbose=False)))
+                tuple(
+                    app.compute(method, votes, seats, tiesallowed=False, verbose=False)
+                )
+            )
         except Exception:
             pass
 
@@ -36,6 +38,6 @@ print("votes = {}".format(votes))
 print("found in {} iterations\n\n".format(iterations))
 
 for method in methods:
-    print("{:>20s}: {}".format(method,
-                               app.compute(method, votes, seats,
-                                           verbose=False)))
+    print(
+        "{:>20s}: {}".format(method, app.compute(method, votes, seats, verbose=False))
+    )

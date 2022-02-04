@@ -5,9 +5,6 @@ from __future__ import print_function, division
 import string
 import math
 import numpy as np
-from fractions import Fraction
-import time
-from fractions import Fraction
 
 
 METHODS = [

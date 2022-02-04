@@ -7,6 +7,7 @@ import math
 import numpy as np
 from fractions import Fraction
 import time
+from fractions import Fraction
 
 
 METHODS = [
@@ -131,7 +132,7 @@ def largest_remainder(
     ties = False
     if np.sum(representatives) < seats:
         remainders = quotas - representatives
-        cutoff = remainders[np.argsort(remainders)[seats - np.sum(representatives) - 1]]
+        cutoff = remainders[np.argsort(remainders)[np.sum(representatives) - seats]]
         tiebreaking_message = (
             "  tiebreaking in order of: "
             + str(parties[: len(votes)])
@@ -179,7 +180,7 @@ def divisor(
     elif method in ["modified_saintelague"]:
         if verbose:
             print("\nModified Sainte Lague (Webster) method")
-        divisors = np.insert(2 * np.arange(1, seats) + 1, 0, 1.4)
+        divisors = np.insert(2 * np.arange(1.0, seats) + 1, 0, 1.4)
     elif method in ["huntington", "hill", "equalproportions"]:
         if verbose:
             print("\nHuntington-Hill method")
@@ -188,7 +189,7 @@ def divisor(
                 votes, seats, parties, tiesallowed, verbose
             )
         else:
-            representatives = np.array([1 if p > 0 else 0 for p in votes])
+            representatives = np.where(votes > 0, 1, 0)
             divisors = np.arange(seats)
             divisors = np.sqrt((divisors + 1) * (divisors + 2))
     elif method in ["adams", "smallestdivisor"]:
@@ -199,7 +200,7 @@ def divisor(
                 votes, seats, parties, tiesallowed, verbose
             )
         else:
-            representatives = [1 if p > 0 else 0 for p in votes]
+            representatives = np.where(votes > 0, 1, 0)
             divisors = np.arange(seats) + 1
     elif method in ["dean", "harmonicmean"]:
         if verbose:
@@ -305,9 +306,8 @@ def quota(votes, seats, parties=string.ascii_letters, tiesallowed=True, verbose=
         quotas = votes / (representatives + 1)
         # check if upper quota is violated
         upperquota = np.trunc(np.ceil(votes * (np.sum(representatives) + 1) / np.sum(votes)))
-        # TODO: upperquota[0]?
         quotas = np.where(representatives >= upperquota, 0, quotas)
-        maxquotas = np.nonzero(quotas == quotas.max())
+        maxquotas = np.nonzero(quotas == quotas.max())[0]
 
         nextrep = maxquotas[0]
 
@@ -315,7 +315,7 @@ def quota(votes, seats, parties=string.ascii_letters, tiesallowed=True, verbose=
         if verbose and len(maxquotas) > 1:
             print(
                 "tiebreaking necessary in round "
-                + str(sum(representatives) + 1)
+                + str(np.sum(representatives) + 1)
                 + ":"
                 + "  tiebreaking in order of: "
                 + str(parties[: len(votes)])

@@ -122,13 +122,13 @@ def within_quota(votes, representatives, parties=string.ascii_letters, verbose=T
 def largest_remainder(
     votes, seats, fractions=True, parties=string.ascii_letters, tiesallowed=True, verbose=True
 ):
-    votes = np.array(votes)
+    # votes = np.array(votes)
     if verbose:
         print("\nLargest remainder method with Hare quota (Hamilton)")
     if fractions:
-        q = Fraction(sum(votes), seats)
-        quotas = [Fraction(p, q) for p in votes]
-        representatives = np.array([int(int(qu.numerator) // int(qu.denominator)) for qu in quotas])
+        q = Fraction(int(sum(votes)), seats)
+        quotas = [Fraction(int(p), q) for p in votes]
+        representatives = np.array([int(qu.numerator // qu.denominator) for qu in quotas])
     else:
         quotas = (votes * seats) / np.sum(votes)
         representatives = np.int_(np.trunc(quotas))
@@ -136,7 +136,6 @@ def largest_remainder(
     ties = False
     if np.sum(representatives) < seats:
         remainders = quotas - representatives
-        # TODO: Overflow error doing Fraction comparisons
         cutoff = remainders[np.argsort(remainders)[np.sum(representatives) - seats]]
         tiebreaking_message = (
             "  tiebreaking in order of: "
@@ -217,9 +216,9 @@ def divisor(
         else:
             representatives = np.array([1 if p > 0 else 0 for p in votes])
             if fractions:
-                divisors = [
+                divisors = np.array([
                     Fraction(2 * (i + 1) * (i + 2), 2 * (i + 1) + 1) for i in range(seats)
-                ]
+                ])
             else:
                 divisors = np.arange(seats)
                 divisors = (2 * (divisors + 1) * (divisors + 2)) / (2 * (divisors + 1) + 1)
@@ -228,10 +227,11 @@ def divisor(
     # assigning representatives
     if seats > np.sum(representatives):
         if fractions and method not in ["huntington", "hill", "modified_saintelague"]:
-            weights = np.array([[Fraction(p, div) for div in divisors] for p in votes])
+            weights = np.array([[Fraction(int(p), d) for d in divisors.tolist()] for p in votes])
+            flatweights = sorted([w for l in weights for w in l])
         else:
             weights = np.array([p / divisors for p in votes])
-        flatweights = np.sort(weights, axis=None)
+            flatweights = np.sort(weights, axis=None)
         minweight = flatweights[-seats + np.sum(representatives)]
 
         representatives += np.count_nonzero(weights > minweight, axis=1)
@@ -318,11 +318,13 @@ def quota(votes, seats, fractions=True, parties=string.ascii_letters, tiesallowe
 
     while np.sum(representatives) < seats:
         if fractions:
-            quotas = [Fraction(votes[i], representatives[i] + 1) for i in range(len(votes))]
+            quotas = [Fraction(int(votes[i]), int(representatives[i]) + 1)
+                      for i in range(len(votes))]
         else:
             quotas = votes / (representatives + 1)
         # check if upper quota is violated
-        upperquota = np.trunc(np.ceil(votes * (np.sum(representatives) + 1) / np.sum(votes)))
+        upperquota = votes * (np.sum(representatives) + 1) / np.sum(votes)
+        upperquota = np.trunc(np.ceil(upperquota))
         quotas = np.where(representatives >= upperquota, 0, quotas)
         maxquotas = np.nonzero(quotas == quotas.max())[0]
 

@@ -1,0 +1,72 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see:
+# https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Unittests
+
+on: [push, pull_request]
+
+jobs:
+  unittests:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9, "3.10"]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        # fetch all tags to be able to generate a version number for test packages
+        fetch-depth: 0
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .[dev]
+
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Check for correct black formatting
+      run: black --check .
+
+    - name: Test with pytest
+      run: |
+        # note that some tests are skipped because Gurobi is not available on Github
+        coverage run --source=. -m pytest -v --tb=long -m unittests.py
+
+    - name: Generate coverage report
+      run: coverage xml
+
+    - name: Upload coverage metrics to codecov
+      uses: codecov/codecov-action@v1
+
+    # tests the package, the release is done in build.yml
+    - name: Build a binary wheel and a source tarball
+      run: python setup.py bdist_wheel
+      env:
+        # does not increment on re-run... :(
+        # this means this will fail in the last step, when uploading the same package again to PyPI
+        # because PyPI requires unique file names for uploaded packages
+        BUILD_NUMBER: ${{ github.run_number }}
+#
+#    # tests uploading the package to the test repo, but only if API_KEY is defined
+#    - name: Publish distribution package to Test PyPI
+#      env:
+#        TEST_PYPI_API_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+#      if: (env.TEST_PYPI_API_TOKEN != null) && (matrix.python-version == '3.8') && (github.ref == 'refs/heads/master')
+#      uses: pypa/gh-action-pypi-publish@master
+#      with:
+#        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+#        repository_url: https://test.pypi.org/legacy/

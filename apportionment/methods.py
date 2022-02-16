@@ -31,15 +31,13 @@ def compute(
     parties=string.ascii_letters,
     threshold=None,
     tiesallowed=True,
-    verbose=True,
+    verbose=False,
 ):
     filtered_votes = apply_threshold(votes, threshold)
     if method == "quota":
         return quota(filtered_votes, seats, fractions, parties, tiesallowed, verbose)
     elif method in ["lrm", "hamilton", "largest_remainder"]:
-        return largest_remainder(
-            filtered_votes, seats, fractions, parties, tiesallowed, verbose
-        )
+        return largest_remainder(filtered_votes, seats, fractions, parties, tiesallowed, verbose)
     elif method in [
         "dhondt",
         "jefferson",
@@ -56,9 +54,7 @@ def compute(
         "majorfractions",
         "greatestdivisors",
     ]:
-        return divisor(
-            filtered_votes, seats, method, fractions, parties, tiesallowed, verbose
-        )
+        return divisor(filtered_votes, seats, method, fractions, parties, tiesallowed, verbose)
     else:
         raise NotImplementedError("apportionment method " + method + " not known")
 
@@ -87,7 +83,7 @@ def __print_results(representatives, parties):
 
 # verifies whether a given assignment of representatives
 # is within quota
-def within_quota(votes, representatives, parties=string.ascii_letters, verbose=True):
+def within_quota(votes, representatives, parties=string.ascii_letters, verbose=False):
     n = sum(votes)
     seats = sum(representatives)
     within = True
@@ -128,7 +124,7 @@ def largest_remainder(
     fractions=False,
     parties=string.ascii_letters,
     tiesallowed=True,
-    verbose=True,
+    verbose=False,
 ):
     # votes = np.array(votes)
     if verbose:
@@ -136,9 +132,7 @@ def largest_remainder(
     if fractions:
         q = Fraction(int(sum(votes)), seats)
         quotas = [Fraction(int(p), q) for p in votes]
-        representatives = np.array(
-            [int(qu.numerator // qu.denominator) for qu in quotas]
-        )
+        representatives = np.array([int(qu.numerator // qu.denominator) for qu in quotas])
     else:
         votes = np.array(votes)
         quotas = (votes * seats) / np.sum(votes)
@@ -186,7 +180,7 @@ def divisor(
     fractions=False,
     parties=string.ascii_letters,
     tiesallowed=True,
-    verbose=True,
+    verbose=False,
 ):
     votes = np.array(votes)
     representatives = np.zeros(len(votes), dtype=int)
@@ -234,24 +228,17 @@ def divisor(
             representatives = np.array([1 if p > 0 else 0 for p in votes])
             if fractions:
                 divisors = np.array(
-                    [
-                        Fraction(2 * (i + 1) * (i + 2), 2 * (i + 1) + 1)
-                        for i in range(seats)
-                    ]
+                    [Fraction(2 * (i + 1) * (i + 2), 2 * (i + 1) + 1) for i in range(seats)]
                 )
             else:
                 divisors = np.arange(seats)
-                divisors = (2 * (divisors + 1) * (divisors + 2)) / (
-                    2 * (divisors + 1) + 1
-                )
+                divisors = (2 * (divisors + 1) * (divisors + 2)) / (2 * (divisors + 1) + 1)
     else:
         raise NotImplementedError("divisor method " + method + " not known")
     # assigning representatives
     if seats > np.sum(representatives):
         if fractions and method not in ["huntington", "hill", "modified_saintelague"]:
-            weights = np.array(
-                [[Fraction(int(p), d) for d in divisors.tolist()] for p in votes]
-            )
+            weights = np.array([[Fraction(int(p), d) for d in divisors.tolist()] for p in votes])
             flatweights = sorted([w for l in weights for w in l])
         else:
             weights = np.array([p / divisors for p in votes])
@@ -296,11 +283,7 @@ def divisor(
 def __divzero_fewerseatsthanparties(votes, seats, parties, tiesallowed, verbose):
     representatives = np.zeros(len(votes), dtype=int)
     if verbose:
-        print(
-            "  fewer seats than parties; "
-            + str(seats)
-            + " strongest parties receive one seat"
-        )
+        print("  fewer seats than parties; " + str(seats) + " strongest parties receive one seat")
     tiebreaking_message = "  ties broken in favor of: "
     ties = False
     mincount = np.sort(votes)[-seats]
@@ -328,7 +311,7 @@ def quota(
     fractions=False,
     parties=string.ascii_letters,
     tiesallowed=True,
-    verbose=True,
+    verbose=False,
 ):
     """The quota method
     see Balinski, M. L., & Young, H. P. (1975).
@@ -338,9 +321,7 @@ def quota(
     Warning: tiesallowed is not supported here (difficult to implement)
     """
     if not tiesallowed:
-        raise NotImplementedError(
-            "parameter tiesallowed not supported for Quota method"
-        )
+        raise NotImplementedError("parameter tiesallowed not supported for Quota method")
     if verbose:
         print("\nQuota method")
 
@@ -350,8 +331,7 @@ def quota(
     while np.sum(representatives) < seats:
         if fractions:
             quotas = [
-                Fraction(int(votes[i]), int(representatives[i]) + 1)
-                for i in range(len(votes))
+                Fraction(int(votes[i]), int(representatives[i]) + 1) for i in range(len(votes))
             ]
         else:
             quotas = votes / (representatives + 1)

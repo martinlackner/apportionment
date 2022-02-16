@@ -30,52 +30,41 @@ import apportionment.methods as app
     ],
 )
 @pytest.mark.parametrize("fractions", [True, False])
-def test_all_implemented(method, fractions):
+@pytest.mark.parametrize("verbose", [True, False])
+def test_all_implemented(method, fractions, verbose):
     votes = [1]
     seats = 1
-    assert app.compute(method, votes, seats, fractions=fractions, verbose=False) == [1]
+    assert app.compute(method, votes, seats, fractions=fractions, verbose=verbose) == [1]
 
 
 @pytest.mark.parametrize("method", app.METHODS)
 @pytest.mark.parametrize("fractions", [True, False])
-def test_weak_proportionality(method, fractions):
+@pytest.mark.parametrize("verbose", [True, False])
+def test_weak_proportionality(method, fractions, verbose):
     votes = [14, 28, 7, 35]
     seats = 12
-    assert app.compute(method, votes, seats, fractions=fractions, verbose=False) == [
-        2,
-        4,
-        1,
-        5,
-    ]
+    result = app.compute(method, votes, seats, fractions=fractions, verbose=verbose)
+    assert result == [2, 4, 1, 5]
 
 
 @pytest.mark.parametrize("method", app.METHODS)
 @pytest.mark.parametrize("fractions", [True, False])
-def test_zero_parties(method, fractions):
+@pytest.mark.parametrize("verbose", [True, False])
+def test_zero_parties(method, fractions, verbose):
     votes = [0, 14, 28, 0, 0]
     seats = 6
-    assert app.compute(method, votes, seats, fractions=fractions, verbose=False) == [
-        0,
-        2,
-        4,
-        0,
-        0,
-    ]
+    result = app.compute(method, votes, seats, fractions=fractions, verbose=verbose)
+    assert result == [0, 2, 4, 0, 0]
 
 
 @pytest.mark.parametrize("method", app.METHODS)
 @pytest.mark.parametrize("fractions", [True, False])
-def test_fewerseatsthanparties(method, fractions):
+@pytest.mark.parametrize("verbose", [True, False])
+def test_fewerseatsthanparties(method, fractions, verbose):
     votes = [10, 9, 8, 8, 11, 12]
     seats = 3
-    assert app.compute(method, votes, seats, fractions=fractions, verbose=False) == [
-        1,
-        0,
-        0,
-        0,
-        1,
-        1,
-    ]
+    result = app.compute(method, votes, seats, fractions=fractions, verbose=verbose)
+    assert result == [1, 0, 0, 0, 1, 1]
 
 
 # examples taken from
@@ -96,13 +85,11 @@ def test_fewerseatsthanparties(method, fractions):
     ],
 )
 @pytest.mark.parametrize("fractions", [True, False])
-def test_balinski_young_example1(method, expected, fractions):
+@pytest.mark.parametrize("verbose", [True, False])
+def test_balinski_young_example1(method, expected, fractions, verbose):
     votes = [5117, 4400, 162, 161, 160]
     seats = 100
-    assert (
-        app.compute(method, votes, seats, fractions=fractions, verbose=False)
-        == expected
-    )
+    assert app.compute(method, votes, seats, fractions=fractions, verbose=verbose) == expected
 
 
 @pytest.mark.parametrize(
@@ -119,21 +106,20 @@ def test_balinski_young_example1(method, expected, fractions):
     ],
 )
 @pytest.mark.parametrize("fractions", [True, False])
-def test_balinski_young_example2(method, expected, fractions):
+@pytest.mark.parametrize("verbose", [True, False])
+def test_balinski_young_example2(method, expected, fractions, verbose):
     votes = [9061, 7179, 5259, 3319, 1182]
     seats = 26
-    assert (
-        app.compute(method, votes, seats, fractions=fractions, verbose=False)
-        == expected
-    )
+    assert app.compute(method, votes, seats, fractions=fractions, verbose=verbose) == expected
 
 
 @pytest.mark.parametrize("method", app.METHODS)
 @pytest.mark.parametrize("fractions", [True, False])
-def test_tiebreaking(method, fractions):
+@pytest.mark.parametrize("verbose", [True, False])
+def test_tiebreaking(method, fractions, verbose):
     votes = [2, 1, 1, 2, 2]
     seats = 2
-    assert app.compute(method, votes, seats, fractions=fractions, verbose=False) == [
+    assert app.compute(method, votes, seats, fractions=fractions, verbose=verbose) == [
         1,
         0,
         0,
@@ -142,18 +128,20 @@ def test_tiebreaking(method, fractions):
     ]
 
 
-def test_within_quota():
+@pytest.mark.parametrize("verbose", [True, False])
+def test_within_quota(verbose):
     votes = [5117, 4400, 162, 161, 160]
     representatives = [51, 44, 2, 2, 1]
-    assert app.within_quota(votes, representatives, verbose=False)
+    assert app.within_quota(votes, representatives, verbose=verbose)
     representatives = [52, 45, 1, 1, 1]
-    assert not app.within_quota(votes, representatives, verbose=False)
+    assert not app.within_quota(votes, representatives, verbose=verbose)
     representatives = [52, 43, 2, 1, 2]
-    assert not app.within_quota(votes, representatives, verbose=False)
+    assert not app.within_quota(votes, representatives, verbose=verbose)
 
 
 @pytest.mark.parametrize("fractions", [True, False])
-def test_threshold(fractions):
+@pytest.mark.parametrize("verbose", [True, False])
+def test_threshold(fractions, verbose):
     votes = [41, 56, 3]
     seats = 60
     threshold = 0.03
@@ -166,50 +154,49 @@ def test_threshold(fractions):
     method = "dhondt"
     threshold = 0
     unfiltered_result = app.compute(
-        method, votes, seats, fractions=fractions, threshold=threshold, verbose=False
+        method, votes, seats, fractions=fractions, threshold=threshold, verbose=verbose
     )
     threshold = 0.04
     filtered_result = app.compute(
-        method, votes, seats, fractions=fractions, threshold=threshold, verbose=False
+        method, votes, seats, fractions=fractions, threshold=threshold, verbose=verbose
     )
     assert unfiltered_result != filtered_result
 
 
 @pytest.mark.parametrize("fractions", [True, False])
-def test_saintelague_difference(fractions):
+@pytest.mark.parametrize("verbose", [True, False])
+def test_saintelague_difference(fractions, verbose):
     votes = [6, 1]
     seats = 4
-    r1 = app.compute(
-        "saintelague", votes, seats, fractions=fractions, verbose=False
-    )  # [3, 1]
+    r1 = app.compute("saintelague", votes, seats, fractions=fractions, verbose=verbose)  # [3, 1]
     r2 = app.compute(
-        "modified_saintelague", votes, seats, fractions=fractions, verbose=False
+        "modified_saintelague", votes, seats, fractions=fractions, verbose=verbose
     )  # [4, 0]
     assert r1 != r2
 
 
 @pytest.mark.parametrize("method", app.METHODS)
 @pytest.mark.parametrize("fractions", [True, False])
-def test_no_ties_allowed(method, fractions):
+@pytest.mark.parametrize("verbose", [True, False])
+def test_no_ties_allowed(method, fractions, verbose):
     votes = [11, 11, 11]
     seats = 4
     if method == "quota":
         return
     with pytest.raises(app.TiesException):
-        app.compute(
-            method, votes, seats, fractions=fractions, tiesallowed=False, verbose=False
-        )
+        app.compute(method, votes, seats, fractions=fractions, tiesallowed=False, verbose=verbose)
 
 
 @pytest.mark.parametrize("method", app.METHODS)
 @pytest.mark.parametrize("fractions", [True, False])
-def test_no_ties_allowed2(method, fractions):
+@pytest.mark.parametrize("verbose", [True, False])
+def test_no_ties_allowed2(method, fractions, verbose):
     votes = [12, 12, 11, 12]
     seats = 3
     if method == "quota":
         return
     assert app.compute(
-        method, votes, seats, fractions=fractions, tiesallowed=False, verbose=False
+        method, votes, seats, fractions=fractions, tiesallowed=False, verbose=verbose
     ) == [1, 1, 0, 1]
 
 
@@ -451,7 +438,8 @@ def test_no_ties_allowed2(method, fractions):
     ],
 )
 @pytest.mark.parametrize("fractions", [True, False])
-def test_austrian_elections(year, partynames, votes, officialresult, fractions):
+@pytest.mark.parametrize("verbose", [True, False])
+def test_austrian_elections(year, partynames, votes, officialresult, fractions, verbose):
     result = app.compute(
         "dhondt",
         votes,
@@ -459,7 +447,7 @@ def test_austrian_elections(year, partynames, votes, officialresult, fractions):
         fractions=fractions,
         parties=partynames,
         threshold=0.04,
-        verbose=True,
+        verbose=verbose,
     )
     assert str(tuple(result) == tuple(officialresult))
 
@@ -556,8 +544,9 @@ def test_austrian_elections(year, partynames, votes, officialresult, fractions):
     ],
 )
 @pytest.mark.parametrize("fractions", [True, False])
+@pytest.mark.parametrize("verbose", [True, False])
 def test_israeli_elections(
-    knesset_nr, partynames, votes, officialresult, threshold, fractions
+    knesset_nr, partynames, votes, officialresult, threshold, fractions, verbose
 ):
     print("Knesset #" + str(knesset_nr) + ":")
     result = app.compute(
@@ -567,6 +556,6 @@ def test_israeli_elections(
         fractions=fractions,
         parties=partynames,
         threshold=threshold,
-        verbose=True,
+        verbose=verbose,
     )
     assert str(tuple(result) == tuple(officialresult))

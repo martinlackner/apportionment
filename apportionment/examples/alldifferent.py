@@ -1,8 +1,6 @@
 # Find vote distribution that produces a different apportionments
 # for each of the specified apportionment methods
 
-
-from __future__ import print_function
 import apportionment.methods as app
 from itertools import combinations
 

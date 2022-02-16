@@ -1,12 +1,9 @@
 # Apportionment methods
 
-
-from __future__ import print_function, division
 from fractions import Fraction
 import math
 import numpy as np
 import string
-
 
 METHODS = [
     "quota",

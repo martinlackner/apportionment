@@ -25,7 +25,7 @@ def compute(
     method,
     votes,
     seats,
-    fractions=True,
+    fractions=False,
     parties=string.ascii_letters,
     threshold=None,
     tiesallowed=True,
@@ -117,7 +117,7 @@ def within_quota(votes, representatives, parties=string.ascii_letters, verbose=T
 
 # Largest remainder method (Hamilton method)
 def largest_remainder(
-    votes, seats, fractions=True, parties=string.ascii_letters, tiesallowed=True, verbose=True
+    votes, seats, fractions=False, parties=string.ascii_letters, tiesallowed=True, verbose=True
 ):
     # votes = np.array(votes)
     if verbose:
@@ -167,7 +167,7 @@ def largest_remainder(
 
 # Divisor methods
 def divisor(
-    votes, seats, method, fractions=True, parties=string.ascii_letters, tiesallowed=True, verbose=True
+    votes, seats, method, fractions=False, parties=string.ascii_letters, tiesallowed=True, verbose=True
 ):
     votes = np.array(votes)
     representatives = np.zeros(len(votes), dtype=int)
@@ -296,7 +296,7 @@ def __divzero_fewerseatsthanparties(votes, seats, parties, tiesallowed, verbose)
     return representatives
 
 
-def quota(votes, seats, fractions=True, parties=string.ascii_letters, tiesallowed=True, verbose=True):
+def quota(votes, seats, fractions=False, parties=string.ascii_letters, tiesallowed=True, verbose=True):
     """The quota method
     see Balinski, M. L., & Young, H. P. (1975).
     The quota method of apportionment.

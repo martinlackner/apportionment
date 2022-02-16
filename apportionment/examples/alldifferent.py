@@ -19,14 +19,11 @@ for iterations, votes in enumerate(iterator):
     apportionments = set()
 
     for method in methods:
-        try:  # in case of ties an exception occurs because tiesallowed=False
-            apportionments.add(
+        apportionments.add(
                 tuple(
-                    app.compute(method, votes, seats, tiesallowed=False, verbose=False)
+                    app.compute(method, votes, seats, verbose=False)
                 )
             )
-        except Exception:
-            pass
 
     if len(apportionments) == len(methods):
         break

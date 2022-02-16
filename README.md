@@ -1,3 +1,11 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6108968.svg)](https://doi.org/10.5281/zenodo.6108968)
+[![MIT License](https://badgen.net/github/license/martinlackner/abcvoting)](https://choosealicense.com/licenses/mit/)
+[![PyPi](https://badgen.net/pypi/v/abcvoting)](https://pypi.org/project/apportionment/)
+![Python versions](https://badgen.net/pypi/python/apportionment)
+[![Build badge](https://github.com/martinlackner/abcvoting/workflows/Build/badge.svg)](https://github.com/martinlackner/apportionment/actions)
+[![Unittests badge](https://github.com/martinlackner/abcvoting/workflows/Unittests/badge.svg)](https://github.com/martinlackner/apportionment/actions)
+
+
 # A Python implementation of common apportionment methods
 
 This is a collection of common apportionment methods. Apportionment has two main applications: 
@@ -17,7 +25,26 @@ The following apportionment methods are implemented:
 
 This module supports Python 3.7+.
 
-## How-to
+## Installation
+
+Using pip:
+
+```bash
+pip install apportionment
+```
+
+Latest development version from source:
+
+```bash
+git clone https://github.com/martinlackner/abcvoting/
+python setup.py install
+```
+
+Requirements:
+* Python 3.7+
+* numpy
+
+## A simple example
 
 The following example calculates the seat distribution of Austrian representatives in the 
 European Parliament based on the D'Hondt method and the [2019 election results](https://www.bmi.gv.at/412/Europawahlen/Europawahl_2019). Parties that received less than 4% are excluded from obtaining seats and are thus excluded in the calculation.

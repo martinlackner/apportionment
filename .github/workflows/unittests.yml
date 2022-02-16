@@ -43,7 +43,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        coverage run --source=. -m pytest -v --tb=long -m unittests.py
+        coverage run --source=. -m pytest -v --tb=long
 
     - name: Generate coverage report
       run: coverage xml

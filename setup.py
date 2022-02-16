@@ -64,7 +64,7 @@ def read_version():
 
 
 setuptools.setup(
-    name="abcvoting",
+    name="apportionment",
     version=read_version(),
     author="Martin Lackner",
     author_email="unexpected@sent.at",
@@ -90,7 +90,7 @@ setuptools.setup(
         "wheel",
     ],
     install_requires=[
-        "numpy>=2.2",
+        "numpy>=1.22.2",
     ],
     extras_require={
         "dev": [

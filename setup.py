@@ -90,7 +90,7 @@ setuptools.setup(
         "wheel",
     ],
     install_requires=[
-        "numpy>=1.22.2",
+        "numpy>=1.20",
     ],
     extras_require={
         "dev": [

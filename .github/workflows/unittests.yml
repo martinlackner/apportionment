@@ -45,11 +45,11 @@ jobs:
       run: |
         coverage run --source=. -m pytest -v --tb=long
 
-    - name: Generate coverage report
-      run: coverage xml
-
-    - name: Upload coverage metrics to codecov
-      uses: codecov/codecov-action@v1
+#    - name: Generate coverage report
+#      run: coverage html
+#
+#    - name: Upload coverage metrics to codecov
+#      uses: codecov/codecov-action@v2
 
     # tests the package, the release is done in build.yml
     - name: Build a binary wheel and a source tarball

@@ -59,4 +59,4 @@ gurobi.log
 excluded
 compare_with_other_implementation.py
 extradata
-
+venv

@@ -10,18 +10,11 @@ parties = 5
 seats = 20
 methods = ["quota", "largest_remainder", "dhondt", "saintelague", "adams"]
 
-
-iterator = combinations(range(1, maxvoters + 1), parties)
-
-for iterations, votes in enumerate(iterator):
+for iterations, votes in enumerate(combinations(range(1, maxvoters + 1), parties)):
     apportionments = set()
 
     for method in methods:
-        apportionments.add(
-                tuple(
-                    app.compute(method, votes, seats, verbose=False)
-                )
-            )
+        apportionments.add(tuple(app.compute(method, votes, seats, verbose=False)))
 
     if len(apportionments) == len(methods):
         break
@@ -33,6 +26,4 @@ print("votes = {}".format(votes))
 print("found in {} iterations\n\n".format(iterations))
 
 for method in methods:
-    print(
-        "{:>20s}: {}".format(method, app.compute(method, votes, seats, verbose=False))
-    )
+    print("{:>20s}: {}".format(method, app.compute(method, votes, seats, verbose=False)))

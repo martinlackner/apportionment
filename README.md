@@ -15,7 +15,7 @@ The following apportionment methods are implemented:
    - Adams
 * the quota method [1]
 
-This module supports 3.7+.
+This module supports Python 3.7+.
 
 ## How-to
 

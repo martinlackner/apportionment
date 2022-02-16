@@ -1,9 +1,9 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6108968.svg)](https://doi.org/10.5281/zenodo.6108968)
-[![MIT License](https://badgen.net/github/license/martinlackner/abcvoting)](https://choosealicense.com/licenses/mit/)
-[![PyPi](https://badgen.net/pypi/v/abcvoting)](https://pypi.org/project/apportionment/)
+[![MIT License](https://badgen.net/github/license/martinlackner/apportionment)](https://choosealicense.com/licenses/mit/)
+[![PyPi](https://badgen.net/pypi/v/apportionment)](https://pypi.org/project/apportionment/)
 ![Python versions](https://badgen.net/pypi/python/apportionment)
-[![Build badge](https://github.com/martinlackner/abcvoting/workflows/Build/badge.svg)](https://github.com/martinlackner/apportionment/actions)
-[![Unittests badge](https://github.com/martinlackner/abcvoting/workflows/Unittests/badge.svg)](https://github.com/martinlackner/apportionment/actions)
+[![Build badge](https://github.com/martinlackner/apportionment/workflows/Build/badge.svg)](https://github.com/martinlackner/apportionment/actions)
+[![Unittests badge](https://github.com/martinlackner/apportionment/workflows/Unittests/badge.svg)](https://github.com/martinlackner/apportionment/actions)
 
 
 # A Python implementation of common apportionment methods
@@ -36,7 +36,7 @@ pip install apportionment
 Latest development version from source:
 
 ```bash
-git clone https://github.com/martinlackner/abcvoting/
+git clone https://github.com/martinlackner/apportionment/
 python setup.py install
 ```
 
@@ -70,8 +70,8 @@ D'Hondt (Jefferson) method
 
 which is indeed the [official result](https://www.bmi.gv.at/412/Europawahlen/Europawahl_2019).
 
-Another example can be found in [apportionment/examples/simple.py](apportionment/examples/simple.py).
-We verify results from recent Austrian National Council elections in [apportionment/examples/austria.py](apportionment/examples/austria.py) and from recent elections of the Israeli Knesset in [apportionment/examples/israel.py](apportionment/examples/israel.py).
+Another example can be found in [examples/simple.py](examples/simple.py).
+We verify results from recent Austrian National Council elections in [examples/austria.py](examples/austria.py) and from recent elections of the Israeli Knesset in [examples/israel.py](examples/israel.py).
 
 ## References
 

@@ -2,9 +2,10 @@
 
 
 from __future__ import print_function, division
-import string
-import math
 from fractions import Fraction
+import math
+import numpy as np
+import string
 
 
 METHODS = [
@@ -27,16 +28,17 @@ def compute(
     method,
     votes,
     seats,
+    fractions=True,
     parties=string.ascii_letters,
     threshold=None,
     tiesallowed=True,
-    verbose=True,
+    verbose=True
 ):
     filtered_votes = apply_threshold(votes, threshold)
     if method == "quota":
-        return quota(filtered_votes, seats, parties, tiesallowed, verbose)
+        return quota(filtered_votes, seats, fractions, parties, tiesallowed, verbose)
     elif method in ["lrm", "hamilton", "largest_remainder"]:
-        return largest_remainder(filtered_votes, seats, parties, tiesallowed, verbose)
+        return largest_remainder(filtered_votes, seats, fractions, parties, tiesallowed, verbose)
     elif method in [
         "dhondt",
         "jefferson",
@@ -53,7 +55,7 @@ def compute(
         "majorfractions",
         "greatestdivisors",
     ]:
-        return divisor(filtered_votes, seats, method, parties, tiesallowed, verbose)
+        return divisor(filtered_votes, seats, method, fractions, parties, tiesallowed, verbose)
     else:
         raise NotImplementedError("apportionment method " + method + " not known")
 
@@ -118,33 +120,39 @@ def within_quota(votes, representatives, parties=string.ascii_letters, verbose=T
 
 # Largest remainder method (Hamilton method)
 def largest_remainder(
-    votes, seats, parties=string.ascii_letters, tiesallowed=True, verbose=True
+    votes, seats, fractions=True, parties=string.ascii_letters, tiesallowed=True, verbose=True
 ):
+    # votes = np.array(votes)
     if verbose:
         print("\nLargest remainder method with Hare quota (Hamilton)")
-    q = Fraction(sum(votes), seats)
-    quotas = [Fraction(p, q) for p in votes]
-    representatives = [int(qu.numerator) // int(qu.denominator) for qu in quotas]
+    if fractions:
+        q = Fraction(int(sum(votes)), seats)
+        quotas = [Fraction(int(p), q) for p in votes]
+        representatives = np.array([int(qu.numerator // qu.denominator) for qu in quotas])
+    else:
+        quotas = (votes * seats) / np.sum(votes)
+        representatives = np.int_(np.trunc(quotas))
 
     ties = False
-    if sum(representatives) < seats:
-        remainders = [a - b for a, b in zip(quotas, representatives)]
-        cutoff = sorted(remainders, reverse=True)[seats - sum(representatives) - 1]
+    if np.sum(representatives) < seats:
+        remainders = quotas - representatives
+        cutoff = remainders[np.argsort(remainders)[np.sum(representatives) - seats]]
         tiebreaking_message = (
             "  tiebreaking in order of: "
             + str(parties[: len(votes)])
             + "\n  ties broken in favor of: "
         )
         for i in range(len(votes)):
-            if sum(representatives) == seats and remainders[i] >= cutoff:
+            reps_sum = np.sum(representatives)
+            if reps_sum == seats and remainders[i] >= cutoff:
                 if not ties:
                     tiebreaking_message = tiebreaking_message[:-2]
                     tiebreaking_message += "\n  to the disadvantage of: "
                     ties = True
                 tiebreaking_message += parties[i] + ", "
-            elif sum(representatives) < seats and remainders[i] > cutoff:
+            elif reps_sum < seats and remainders[i] > cutoff:
                 representatives[i] += 1
-            elif sum(representatives) < seats and remainders[i] == cutoff:
+            elif reps_sum < seats and remainders[i] == cutoff:
                 tiebreaking_message += parties[i] + ", "
                 representatives[i] += 1
         if ties and verbose:
@@ -156,26 +164,27 @@ def largest_remainder(
     if verbose:
         __print_results(representatives, parties)
 
-    return representatives
+    return representatives.tolist()
 
 
 # Divisor methods
 def divisor(
-    votes, seats, method, parties=string.ascii_letters, tiesallowed=True, verbose=True
+    votes, seats, method, fractions=True, parties=string.ascii_letters, tiesallowed=True, verbose=True
 ):
-    representatives = [0] * len(votes)
+    votes = np.array(votes)
+    representatives = np.zeros(len(votes), dtype=int)
     if method in ["dhondt", "jefferson", "greatestdivisors"]:
         if verbose:
             print("\nD'Hondt (Jefferson) method")
-        divisors = [i + 1 for i in range(seats)]
+        divisors = np.arange(seats) + 1
     elif method in ["saintelague", "webster", "majorfractions"]:
         if verbose:
             print("\nSainte Lague (Webster) method")
-        divisors = [2 * i + 1 for i in range(seats)]
+        divisors = 2 * np.arange(seats) + 1
     elif method in ["modified_saintelague"]:
         if verbose:
             print("\nModified Sainte Lague (Webster) method")
-        divisors = [1.4] + [2 * i + 1 for i in range(1, seats)]
+        divisors = np.insert(2 * np.arange(1.0, seats) + 1, 0, 1.4)
     elif method in ["huntington", "hill", "equalproportions"]:
         if verbose:
             print("\nHuntington-Hill method")
@@ -184,8 +193,9 @@ def divisor(
                 votes, seats, parties, tiesallowed, verbose
             )
         else:
-            representatives = [1 if p > 0 else 0 for p in votes]
-            divisors = [math.sqrt((i + 1) * (i + 2)) for i in range(seats)]
+            representatives = np.where(votes > 0, 1, 0)
+            divisors = np.arange(seats)
+            divisors = np.sqrt((divisors + 1) * (divisors + 2))
     elif method in ["adams", "smallestdivisor"]:
         if verbose:
             print("\nAdams method")
@@ -194,8 +204,8 @@ def divisor(
                 votes, seats, parties, tiesallowed, verbose
             )
         else:
-            representatives = [1 if p > 0 else 0 for p in votes]
-            divisors = [i + 1 for i in range(seats)]
+            representatives = np.where(votes > 0, 1, 0)
+            divisors = np.arange(seats) + 1
     elif method in ["dean", "harmonicmean"]:
         if verbose:
             print("\nDean method")
@@ -204,37 +214,38 @@ def divisor(
                 votes, seats, parties, tiesallowed, verbose
             )
         else:
-            representatives = [1 if p > 0 else 0 for p in votes]
-            divisors = [
-                Fraction(2 * (i + 1) * (i + 2), 2 * (i + 1) + 1) for i in range(seats)
-            ]
+            representatives = np.array([1 if p > 0 else 0 for p in votes])
+            if fractions:
+                divisors = np.array([
+                    Fraction(2 * (i + 1) * (i + 2), 2 * (i + 1) + 1) for i in range(seats)
+                ])
+            else:
+                divisors = np.arange(seats)
+                divisors = (2 * (divisors + 1) * (divisors + 2)) / (2 * (divisors + 1) + 1)
     else:
         raise NotImplementedError("divisor method " + method + " not known")
-
     # assigning representatives
-    if seats > sum(representatives):
-        weights = []
-        for p in votes:
-            if method in ["huntington", "hill", "modified_saintelague"]:
-                weights.append([(p / div) for div in divisors])
-            else:
-                weights.append([Fraction(p, div) for div in divisors])
-        flatweights = sorted([w for l in weights for w in l], reverse=True)
-        minweight = flatweights[seats - sum(representatives) - 1]
+    if seats > np.sum(representatives):
+        if fractions and method not in ["huntington", "hill", "modified_saintelague"]:
+            weights = np.array([[Fraction(int(p), d) for d in divisors.tolist()] for p in votes])
+            flatweights = sorted([w for l in weights for w in l])
+        else:
+            weights = np.array([p / divisors for p in votes])
+            flatweights = np.sort(weights, axis=None)
+        minweight = flatweights[-seats + np.sum(representatives)]
 
-        for i in range(len(votes)):
-            representatives[i] += len([w for w in weights[i] if w > minweight])
+        representatives += np.count_nonzero(weights > minweight, axis=1)
 
     ties = False
     # dealing with ties
-    if seats > sum(representatives):
+    if seats > np.sum(representatives):
         tiebreaking_message = (
             "  tiebreaking in order of: "
             + str(parties[: len(votes)])
             + "\n  ties broken in favor of: "
         )
         for i in range(len(votes)):
-            if sum(representatives) == seats and minweight in weights[i]:
+            if np.sum(representatives) == seats and minweight in weights[i]:
                 if not ties:
                     if not tiesallowed:
                         raise TiesException("Tie occurred")
@@ -242,7 +253,7 @@ def divisor(
                     tiebreaking_message += "\n  to the disadvantage of: "
                     ties = True
                 tiebreaking_message += parties[i] + ", "
-            if sum(representatives) < seats and minweight in weights[i]:
+            if np.sum(representatives) < seats and minweight in weights[i]:
                 tiebreaking_message += parties[i] + ", "
                 representatives[i] += 1
         if ties and verbose:
@@ -254,12 +265,12 @@ def divisor(
     if verbose:
         __print_results(representatives, parties)
 
-    return representatives
+    return representatives.tolist()
 
 
 # required for methods with 0 divisors (Adams, Huntington-Hill)
 def __divzero_fewerseatsthanparties(votes, seats, parties, tiesallowed, verbose):
-    representatives = [0] * len(votes)
+    representatives = np.zeros(len(votes), dtype=int)
     if verbose:
         print(
             "  fewer seats than parties; "
@@ -268,13 +279,13 @@ def __divzero_fewerseatsthanparties(votes, seats, parties, tiesallowed, verbose)
         )
     tiebreaking_message = "  ties broken in favor of: "
     ties = False
-    mincount = sorted(votes, reverse=True)[seats - 1]
+    mincount = np.sort(votes)[-seats]
     for i in range(len(votes)):
-        if sum(representatives) < seats and votes[i] >= mincount:
+        if np.sum(representatives) < seats and votes[i] >= mincount:
             if votes[i] == mincount:
                 tiebreaking_message += parties[i] + ", "
             representatives[i] = 1
-        elif sum(representatives) == seats and votes[i] >= mincount:
+        elif np.sum(representatives) == seats and votes[i] >= mincount:
             if not ties:
                 tiebreaking_message = tiebreaking_message[:-2]
                 tiebreaking_message += "\n  to the disadvantage of: "
@@ -287,7 +298,7 @@ def __divzero_fewerseatsthanparties(votes, seats, parties, tiesallowed, verbose)
     return representatives
 
 
-def quota(votes, seats, parties=string.ascii_letters, tiesallowed=True, verbose=True):
+def quota(votes, seats, fractions=True, parties=string.ascii_letters, tiesallowed=True, verbose=True):
     """The quota method
     see Balinski, M. L., & Young, H. P. (1975).
     The quota method of apportionment.
@@ -301,18 +312,21 @@ def quota(votes, seats, parties=string.ascii_letters, tiesallowed=True, verbose=
         )
     if verbose:
         print("\nQuota method")
-    representatives = [0] * len(votes)
-    while sum(representatives) < seats:
-        quotas = [Fraction(votes[i], representatives[i] + 1) for i in range(len(votes))]
-        # check if upper quota is violated
-        for i in range(len(votes)):
-            upperquota = int(
-                math.ceil(float(votes[i]) * (sum(representatives) + 1) / sum(votes))
-            )
-            if representatives[i] >= upperquota:
-                quotas[i] = 0
 
-        maxquotas = [i for i in range(len(votes)) if quotas[i] == max(quotas)]
+    votes = np.array(votes)
+    representatives = np.zeros(len(votes), dtype=int)
+
+    while np.sum(representatives) < seats:
+        if fractions:
+            quotas = [Fraction(int(votes[i]), int(representatives[i]) + 1)
+                      for i in range(len(votes))]
+        else:
+            quotas = votes / (representatives + 1)
+        # check if upper quota is violated
+        upperquota = votes * (np.sum(representatives) + 1) / np.sum(votes)
+        upperquota = np.trunc(np.ceil(upperquota))
+        quotas = np.where(representatives >= upperquota, 0, quotas)
+        maxquotas = np.nonzero(quotas == quotas.max())[0]
 
         nextrep = maxquotas[0]
 
@@ -320,7 +334,7 @@ def quota(votes, seats, parties=string.ascii_letters, tiesallowed=True, verbose=
         if verbose and len(maxquotas) > 1:
             print(
                 "tiebreaking necessary in round "
-                + str(sum(representatives) + 1)
+                + str(np.sum(representatives) + 1)
                 + ":"
                 + "  tiebreaking in order of: "
                 + str(parties[: len(votes)])
@@ -335,4 +349,4 @@ def quota(votes, seats, parties=string.ascii_letters, tiesallowed=True, verbose=
     if verbose:
         __print_results(representatives, parties)
 
-    return representatives
+    return representatives.tolist()

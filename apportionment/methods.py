@@ -130,6 +130,7 @@ def largest_remainder(
         quotas = [Fraction(int(p), q) for p in votes]
         representatives = np.array([int(qu.numerator // qu.denominator) for qu in quotas])
     else:
+        votes = np.array(votes)
         quotas = (votes * seats) / np.sum(votes)
         representatives = np.int_(np.trunc(quotas))
 
